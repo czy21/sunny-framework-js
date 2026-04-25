@@ -50,7 +50,7 @@
                           type="datetimerange"
                           start-placeholder="开始时间" end-placeholder="结束时间"
           />
-          <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)"
+          <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)" @change="(value) => handleSelect(value, item)"
                      :placeholder="item.placeholder??''">
             <el-option v-for="opt in getOptions(item)" :label="opt.label" :value="opt.value"></el-option>
           </el-select>
@@ -70,9 +70,13 @@
           <slot :name="item.prop" v-else/>
         </el-form-item>
       </el-col>
+      <el-form-item v-if="option.actionType === 'col' && option.submitShow">
+        <el-button type="primary" @click="handleSubmit">{{ option.submitText }}</el-button>
+        <el-button @click="handleCancel">{{ option.cancelText }}</el-button>
+      </el-form-item>
     </el-row>
     <slot name="footer"/>
-    <el-form-item v-if="option.submitShow">
+    <el-form-item v-if="option.actionType === 'row' && option.submitShow">
       <el-button type="primary" @click="handleSubmit">{{ option.submitText }}</el-button>
       <el-button @click="handleCancel">{{ option.cancelText }}</el-button>
     </el-form-item>
@@ -99,6 +103,7 @@ const option = computed(() => ({
   submitShow: true,
   submitText: "保存",
   cancelText: "取消",
+  actionType: 'row',
   labelPosition: 'right',
   span: 12,
   items: [],
@@ -130,7 +135,8 @@ function getOptions(item: DynamicFormItem) {
 
 const emit = defineEmits<{
   'submit': []
-  'cancel': []
+  'cancel': [],
+  'change':[]
 }>()
 
 const formRef = ref<FormInstance>()
@@ -141,6 +147,10 @@ const handleSubmit = () => {
 
 const handleCancel = () => {
   emit('cancel');
+}
+
+const handleSelect = (value: any, item: any) => {
+  emit('change', value, item)
 }
 
 const dateCalendarChange = (item: DynamicFormItem, val) => {

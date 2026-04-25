@@ -5,6 +5,7 @@ export interface DynamicFormOption {
     submitShow?: boolean
     submitText?: string
     cancelText?: string
+    actionType?: string
     span?: string
     items: DynamicFormItem[]
 }
