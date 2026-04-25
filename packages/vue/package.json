@@ -7,6 +7,7 @@
   "dependencies": {
     "@breejs/later": "^4.2.0",
     "@element-plus/icons-vue": "^2.3.2",
+    "default-passive-events": "^4.0.0",
     "echarts": "^6.0.0",
     "element-plus": "^2.11.9",
     "naive-ui": "^2.41.0",

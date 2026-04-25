@@ -50,7 +50,7 @@
                           type="datetimerange"
                           start-placeholder="开始时间" end-placeholder="结束时间"
           />
-          <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)" @change="(value) => handleSelect(value, item)"
+          <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)" @change="(value) => handleChange(value, item)"
                      :placeholder="item.placeholder??''">
             <el-option v-for="opt in getOptions(item)" :label="opt.label" :value="opt.value"></el-option>
           </el-select>
@@ -67,7 +67,7 @@
             {{ getTagLabel(item, t) }}
           </el-tag>
           <Cron v-else-if="item.type === 'cron'" v-model="formData[item.prop]" editable :disabled="getDisabled(item)"/>
-          <slot :name="item.prop" v-else/>
+          <slot :name="item.prop" :=item v-else/>
         </el-form-item>
       </el-col>
       <el-form-item v-if="option.actionType === 'col' && option.submitShow">
@@ -149,7 +149,7 @@ const handleCancel = () => {
   emit('cancel');
 }
 
-const handleSelect = (value: any, item: any) => {
+const handleChange = (value: any, item: any) => {
   emit('change', value, item)
 }
 

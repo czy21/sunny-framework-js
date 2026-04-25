@@ -1,3 +1,4 @@
+import 'default-passive-events'
 import {Component, createApp as createAppVue} from 'vue'
 import App from './App.vue'
 import {createPinia} from 'pinia'
