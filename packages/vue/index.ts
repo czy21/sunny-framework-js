@@ -8,3 +8,5 @@ export type * from './src/layout/menu'
 
 export * from './src/component'
 export type * from './src/component'
+
+export * as permission from './src/permission'
