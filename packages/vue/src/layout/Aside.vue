@@ -4,7 +4,7 @@
       <slot name="logo"/>
     </div>
     <el-scrollbar style="flex: 1 1 auto; overflow: hidden;">
-      <el-menu :collapse="collapse" background-color="#304156" text-color="#bfcbd9" active-text-color="#409EFF" :default-active="route.path" router>
+      <el-menu :collapse="collapse" background-color="#304156" text-color="#bfcbd9" active-text-color="#409EFF" :default-active="route.path" router :ellipsis="false">
         <Menu :collapse="collapse" :menu-tree="props.menus"/>
       </el-menu>
     </el-scrollbar>
