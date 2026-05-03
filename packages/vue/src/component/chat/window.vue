@@ -20,6 +20,7 @@
 import {nextTick, ref, watch} from "vue";
 import ChatMessage from './message.vue';
 import {Picture} from '@element-plus/icons-vue'
+import {ElMessage} from 'element-plus'
 
 const props = withDefaults(
     defineProps<{
@@ -104,6 +105,9 @@ const handleUploadImage = (file, uploadFiles) => {
         }
       ]
     })
+  } else if (code === -1){
+    const data = file.response
+    ElMessage.error(data.message)
   }
 }
 
