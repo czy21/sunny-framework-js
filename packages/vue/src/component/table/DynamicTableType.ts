@@ -44,6 +44,7 @@ export interface TableColumn {
     prop?: string
     name: string
     type?: string | "string" | "number" | "select"
+    label?: ((scope?: any) => any)
     children?: TableColumn[]
     selectable?: boolean
     parentProp?: string
@@ -59,6 +60,7 @@ export interface TableColumn {
     changeByProps?: string[]
     width?: number | string
     fixed?: string
+    align?: string
     remote?: boolean
     min?: number
     max?: number

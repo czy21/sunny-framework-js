@@ -91,9 +91,8 @@ const props = withDefaults(defineProps<TableProps>(), {
     return false
   },
   cellStyle() {
-    return {
-      textAlign: 'center'
-    }
+    return {}
+    return {}
   },
   border(){
     return true
@@ -163,6 +162,9 @@ const onExitEditMode = (scope: any) => {
 
 const ShowCell: FunctionalComponent<any> = (scope) => {
   let label = scope.row[scope.column.property]
+  if (typeof scope.column.params.label === 'function'){
+    return scope.column.params.label(scope)
+  }
   if (scope.column.params.dictKey && props.dict) {
     const options = props.dict[scope.column.params.dictKey]
     let value = options?.find(t => t.value === scope.row[scope.column.property])?.label
