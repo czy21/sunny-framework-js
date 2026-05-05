@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { ElMessage } from "element-plus";
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
+import {ElMessage} from "element-plus";
+import {userRouter} from 'vue-router'
 
 export enum Method {
     GET = "GET",
@@ -14,31 +15,34 @@ export interface RequestOption {
 }
 
 export interface HttpClientOption {
-    baseURL?: string;
-    handleResponse?: (response: AxiosResponse<any>) => void;
+    baseURL?: string
+    router?: any
+    handleResponse?: (response: AxiosResponse<any>) => void
 }
 
 export class HttpClient {
 
-    private service: AxiosInstance;
-
+    private service: AxiosInstance
+    private readonly router: any
     private readonly handleResponse: (response: AxiosResponse<any>) => void
 
     constructor({
-        baseURL = import.meta.env.VITE_BASE_API,
-        handleResponse = () => {
-        }
-    }: HttpClientOption = {}) {
+                    baseURL = import.meta.env.VITE_BASE_API,
+                    router = undefined,
+                    handleResponse = () => {
+                    }
+                }: HttpClientOption = {}) {
         this.service = axios.create({
             baseURL,
             withCredentials: true,
         });
+        this.router = router
         this.handleResponse = handleResponse
         this.setupInterceptors();
     }
 
     private setupInterceptors() {
-
+        const router = this.router
         this.service.interceptors.request.use(
             (config: any) => config,
             (error: any) => Promise.reject(error)
@@ -46,7 +50,7 @@ export class HttpClient {
 
         this.service.interceptors.response.use(
             (response: AxiosResponse<any>) => {
-                const { code, message } = response.data;
+                const {code, message} = response.data;
                 if (code === -1) {
                     ElMessage({
                         type: "error",
@@ -63,17 +67,9 @@ export class HttpClient {
 
                 switch (status) {
                     case 401:
-                        ElMessage({
-                            type: "error",
-                            message: "登录信息过期，请重新登录",
-                            duration: 3000,
-                            onClose() {
-                                localStorage.removeItem("isLoggedIn");
-                                window.location.reload();
-                            },
-                        });
+                        const redirect = router.currentRoute.value.fullPath;
+                        window.location.href = router.resolve({path: '/login', query: {redirect}}).href;
                         break;
-
                     case 500:
                     case 502:
                         ElMessage({
@@ -103,7 +99,7 @@ export class HttpClient {
         params?: any,
         option?: RequestOption
     ): Promise<T> {
-        const { config, errorCallBack } = option || {};
+        const {config, errorCallBack} = option || {};
 
         return new Promise((resolve, reject) => {
             this.service({
@@ -141,7 +137,7 @@ export class HttpClient {
         const versionKey = "version";
         const versionObj = JSON.parse((localStorage.getItem(versionKey) || '{}') as string);
 
-        this.get<any>("version.json", { date: Date.now() }, { config: { baseURL: "/" } })
+        this.get<any>("version.json", {date: Date.now()}, {config: {baseURL: "/"}})
             .then((res) => {
                 if (res.data?.buildDate !== versionObj.buildDate) {
                     localStorage.setItem(versionKey, JSON.stringify(res.data));
