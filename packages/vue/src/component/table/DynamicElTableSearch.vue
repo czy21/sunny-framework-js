@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="formRef" :model="formData">
+  <el-form ref="formRef" :model="formData" @submit.prevent="handleSearch">
     <el-row :gutter="10">
       <el-col v-for="item in option.items" :span="item.span ?? option.span">
         <el-form-item v-if="item.type ==='action'">
