@@ -51,6 +51,7 @@
                           start-placeholder="开始时间" end-placeholder="结束时间"
           />
           <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)" @change="(value) => handleChange(value, item)"
+                     :filterable="item.remote" :remote="item.remote" :remote-method="(value)=>item.remoteMethod(value,item,formData,props.dict)"
                      :placeholder="item.placeholder??''">
             <el-option v-for="opt in getOptions(item)" :label="opt.label" :value="opt.value"></el-option>
           </el-select>
