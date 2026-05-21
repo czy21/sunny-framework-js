@@ -4,6 +4,7 @@ export interface DynamicFormOption {
     labelPosition?: "top" | "bottom" | "left" | "right";
     submitShow?: boolean
     submitText?: string
+    cancelShow?: boolean
     cancelText?: string
     actionType?: string
     span?: string

@@ -31,6 +31,9 @@
             <template #tag="scope">
               <span>{{ getInputTagLabel(item, scope.value) }}</span>
             </template>
+            <template #suffix>
+              <span>{{ item.suffix?.(item,formData) }}</span>
+            </template>
           </el-input-tag>
           <el-input v-else-if="item.type === 'password'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)"
                     :placeholder="item.placeholder??''"
@@ -39,7 +42,11 @@
           <el-input-number v-else-if="item.type === 'number'" v-model="formData[item.prop]" :disabled="getDisabled(item)"
                            :placeholder="item.placeholder??''"
                            :min="item.min" :max="item.max" controls-position="right" style="width:100%"
-          />
+          >
+            <template #suffix>
+              <span>{{ item.suffix?.(item,formData) }}</span>
+            </template>
+          </el-input-number>
           <el-date-picker v-else-if="item.type === 'date'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)"
                           :value-format="item.valueFormat??item.format" :format="item.format"
                           type="date"
@@ -73,13 +80,13 @@
       </el-col>
       <el-form-item v-if="option.actionType === 'col' && option.submitShow">
         <el-button type="primary" @click="handleSubmit">{{ option.submitText }}</el-button>
-        <el-button @click="handleCancel">{{ option.cancelText }}</el-button>
+        <el-button v-if="option.cancelShow" @click="handleCancel">{{ option.cancelText }}</el-button>
       </el-form-item>
     </el-row>
     <slot name="footer"/>
     <el-form-item v-if="option.actionType === 'row' && option.submitShow">
       <el-button type="primary" @click="handleSubmit">{{ option.submitText }}</el-button>
-      <el-button @click="handleCancel">{{ option.cancelText }}</el-button>
+      <el-button v-if="option.cancelShow" @click="handleCancel">{{ option.cancelText }}</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -103,6 +110,7 @@ const props = withDefaults(
 const option = computed(() => ({
   submitShow: true,
   submitText: "保存",
+  cancelShow: true,
   cancelText: "取消",
   actionType: 'row',
   labelPosition: 'right',
