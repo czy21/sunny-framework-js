@@ -11,6 +11,7 @@ declare module 'element-plus' {
 export interface TableProps {
     rowVal?: object
     rowKey?: string
+    defaultExpandAll?: boolean
     selectable?: boolean
     columns: Array<TableColumn>
     data: Array<object>
@@ -28,6 +29,7 @@ export interface TableProps {
     total?: number
     cellStyle?: Function | CSSProperties
     height?: string | number
+    maxHeight?: string | number
     border?: boolean
     stripe?: boolean
 }

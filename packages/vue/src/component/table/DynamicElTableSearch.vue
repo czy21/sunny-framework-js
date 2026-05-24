@@ -4,7 +4,7 @@
       <el-col v-for="item in option.items" :span="item.span ?? option.span">
         <el-form-item :label="item.name" :prop="item.prop">
           <el-input v-if="item.type === 'input'" v-model="formData[item.prop]"
-                    :disabled="item.disabled" :placeholder="item.placeholder" clearable @input="handleInput"/>
+                    :disabled="item.disabled" :placeholder="item.placeholder" clearable @[item.remote?'input':null]="handleInput"/>
           <el-select v-else-if="item.type === 'select'"
                      v-model="formData[item.prop]" :disabled="item.disabled" :placeholder="item.placeholder??''" clearable>
             <el-option v-for="opt in item.options" :label="opt.label" :value="opt.value"></el-option>

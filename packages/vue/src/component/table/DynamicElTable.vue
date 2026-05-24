@@ -1,7 +1,7 @@
 <template>
   <el-table ref="tableRef"
             :row-key="props.rowKey"
-            default-expand-all
+            :default-expand-all="props.defaultExpandAll"
             :border="props.border"
             :stripe="props.stripe"
             :data="props.data"
@@ -12,6 +12,7 @@
             :summary-method="summaryMethod"
             :scroll="handleScroll"
             :height="props.height"
+            :max-height="props.maxHeight"
   >
     <el-table-column type="selection" :selectable="selectable" v-if="props.selectable"/>
     <dynamic-el-column :node="t" v-for="t in props.columns">
@@ -66,6 +67,9 @@ const props = withDefaults(defineProps<TableProps>(), {
   },
   rowKey() {
     return 'id'
+  },
+  defaultExpandAll(){
+    return true
   },
   selectable() {
     return false

@@ -20,13 +20,14 @@
         </el-form-item>
         <el-form-item :label="item.name" :prop="item.prop" :rules="item.rules || []" v-else>
           <el-input v-if="item.type === 'input'" v-model="formData[item.prop]" :placeholder="item.placeholder??''" clearable :disabled="getDisabled(item)"/>
-          <el-input-tag v-if="item.type === 'input-tag'" v-model="formData[item.prop]" :placeholder="item.placeholder??''" clearable :disabled="getDisabled(item)"
+          <el-input-tag v-else-if="item.type === 'input-tag'" v-model="formData[item.prop]" :placeholder="item.placeholder??''" clearable :disabled="getDisabled(item)"
                         @keydown="(e:any)=> item.keydownPrevent && e.preventDefault()"
                         collapse-tags collapse-tags-tooltip
                         :max-collapse-tags="item.props?.maxCollapseTags ?? 1"
                         :tag-type="item.props?.tagType ?? 'primary'"
                         @remove-tag="(value:any,index:number)=>handleInputRemoveTag(item,value,index)"
                         @clear="handleInputRemoveTag(item)"
+                        :delimiter="item.delimiter"
           >
             <template #tag="scope">
               <span>{{ getInputTagLabel(item, scope.value) }}</span>
@@ -74,6 +75,7 @@
           <el-tag v-else-if="item.type === 'tag'" v-for="t in formData[item.prop]" :key="t[item.props['value']]" closable @close="(e:any)=>handleTagClose(e,item,t)" :disabled="getDisabled(item)">
             {{ getTagLabel(item, t) }}
           </el-tag>
+          <el-switch v-else-if="item.type === 'switch'" v-model="formData[item.prop]" :active-value="true" :inactive-value="false"/>
           <Cron v-else-if="item.type === 'cron'" v-model="formData[item.prop]" editable :disabled="getDisabled(item)"/>
           <slot :name="item.prop" :=item v-else/>
         </el-form-item>
@@ -202,16 +204,22 @@ props.option.items
           () => formData.value[t.prop],
           (arrNew, arrOld) => {
             if (!Array.isArray(arrNew)) return;
-
             const map = new Map();
             arrNew.forEach(v => map.set(t.props.key(v), v));
             const uniqueArr = Array.from(map.values());
+
+            if (t.props.newItem){
+              uniqueArr.forEach((v,i) => {
+                if (typeof v === 'string') uniqueArr[i] = t.props.newItem(v);
+              });
+            }
 
             const changed = !arrOld || arrOld.length !== uniqueArr.length || arrOld.some((v, i) => t.props.key(v) !== t.props.key(uniqueArr[i]));
 
             if (changed) {
               formData.value[t.prop] = uniqueArr;
             }
+
           },
           {deep: true}
       );

@@ -30,6 +30,8 @@ export interface DynamicFormItem {
     shortcuts?: any[]
     rules?: FormItemRule[]
     keydownPrevent?: boolean
+    remote?: boolean
+    remoteMethod?: ((value: any, item: DynamicFormItem, formData: any, dict: any) => void)
 }
 
 export interface DynamicFormItemOption {
