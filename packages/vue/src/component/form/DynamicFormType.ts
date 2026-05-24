@@ -7,6 +7,8 @@ export interface DynamicFormOption {
     cancelShow?: boolean
     cancelText?: string
     actionType?: string
+    debounceWait?: number
+    debounceMaxWait?: number
     span?: string
     items: DynamicFormItem[]
 }
