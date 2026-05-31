@@ -205,14 +205,15 @@ props.option.items
           (arrNew, arrOld) => {
             if (!Array.isArray(arrNew)) return;
             const map = new Map();
-            arrNew.forEach(v => map.set(t.props.key(v), v));
+            arrNew.forEach(v => {
+              let item = v;
+              if (t.props.newItem && typeof v === 'string') {
+                item = t.props.newItem(v);
+              }
+              const key = t.props.key ? t.props.key(item) : item;
+              map.set(key, item);
+            });
             const uniqueArr = Array.from(map.values());
-
-            if (t.props.newItem){
-              uniqueArr.forEach((v,i) => {
-                if (typeof v === 'string') uniqueArr[i] = t.props.newItem(v);
-              });
-            }
 
             const changed = !arrOld || arrOld.length !== uniqueArr.length || arrOld.some((v, i) => t.props.key(v) !== t.props.key(uniqueArr[i]));
 
