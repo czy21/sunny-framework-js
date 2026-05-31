@@ -1,6 +1,10 @@
 import 'default-passive-events'
 import {Component, createApp as createAppVue} from 'vue'
 import App from './App.vue'
+
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+
 import {createPinia} from 'pinia'
 import Naive from 'naive-ui'
 import ElementPlus from 'element-plus'
@@ -17,6 +21,8 @@ import VueVirtualScroller from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 import './static/var.css'
+
+dayjs.extend(duration);
 
 const createApp = (rootComponent?: Component) => {
     const app = createAppVue(rootComponent || App)
