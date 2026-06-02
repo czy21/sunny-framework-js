@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="formRef" label-width="auto" :model="formData" :label-position="option.labelPosition">
+  <el-form ref="formRef" :model="formData" label-width="auto" :label-position="option.labelPosition" :hide-required-asterisk="option.hideRequiredAsterisk">
     <el-row :gutter="10">
       <el-col v-for="item in formItems" :span="item.span ?? option.span">
         <el-form-item :label="item.name" :prop="item.prop" :rules="item.rules || []" v-if="item.type === 'inputs'">
@@ -59,6 +59,7 @@
                           start-placeholder="开始时间" end-placeholder="结束时间"
           />
           <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)" @change="(value) => handleChange(value, item)"
+                     :multiple="item.multiple ?? false" :collapse-tags="item.collapseTags ?? false" :max-collapse-tags="item.maxCollapseTags ?? 2"
                      :filterable="item.remote" :remote="item.remote" :remote-method="(value)=>item.remoteMethod(value,item,formData,props.dict)"
                      :placeholder="item.placeholder??''">
             <el-option v-for="opt in getOptions(item)" :label="opt.label" :value="opt.value"></el-option>
@@ -116,6 +117,7 @@ const option = computed(() => ({
   cancelText: "取消",
   actionType: 'row',
   labelPosition: 'right',
+  hideRequiredAsterisk: false,
   span: 12,
   items: [],
   ...props.option,

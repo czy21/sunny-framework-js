@@ -1,7 +1,10 @@
 import {util} from '@sunny-framework-js/core'
 
 
-export const buildRouter = (obj = {} as { router: any, checkVersion?: () => void, views: any, useUserStore: any }) => {
+export const buildRouter = (
+    obj = {} as { router: any, checkVersion?: () => void, views: any, useUserStore: any },
+    login = { mode: 'modal'} as { mode: 'route' | 'modal' }
+) => {
 
     const LOGIN_PATH = '/login';
 
@@ -9,6 +12,7 @@ export const buildRouter = (obj = {} as { router: any, checkVersion?: () => void
         if (obj.checkVersion) obj.checkVersion();
 
         const userStore = obj.useUserStore();
+
         if (to.path === LOGIN_PATH || userStore.profile.loaded) return next();
 
         try {
