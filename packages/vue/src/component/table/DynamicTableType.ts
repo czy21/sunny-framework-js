@@ -67,6 +67,7 @@ export interface TableColumn {
     min?: number
     max?: number
     precision?: number
+    timeZone?: string | "browser"
     custom?: boolean
 }
 

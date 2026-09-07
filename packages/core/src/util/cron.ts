@@ -1,4 +1,0 @@
-
-export const getCronLabel = (val) => {
-
-}

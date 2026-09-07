@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import _ from 'lodash'
+import dayjs from 'dayjs'
 
 
 export const callIfExists = (fn?: Function, resultForNonFunction?: any, ...args: any) => {
@@ -7,6 +8,10 @@ export const callIfExists = (fn?: Function, resultForNonFunction?: any, ...args:
         return fn?.apply(args)
     }
     return resultForNonFunction
+}
+
+export const formatUtc = (value, format="YYYY-MM-DD HH:mm:ss [GMT]Z") => {
+    return dayjs(value).format(format)
 }
 
 export const downloadFile = (res: AxiosResponse, fileName?: string) => {

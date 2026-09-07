@@ -16,7 +16,8 @@
           <el-date-picker v-else-if="item.type === 'datetimerange'"
                           type="datetimerange" v-model="formData[item.prop]" :value-format="item.valueFormat??item.format" :format="item.format" clearable
                           :shortcuts="item.shortcuts" @calendar-change="(val)=>dateCalendarChange(item,val)"
-                          start-placeholder="开始时间" end-placeholder="结束时间"
+                          :start-placeholder="item.startPlaceholder ?? '开始时间'"
+                          :end-placeholder="item.endPlaceholder ?? '结束时间'"
           />
           <slot :name="item.prop" :=item v-else/>
         </el-form-item>
