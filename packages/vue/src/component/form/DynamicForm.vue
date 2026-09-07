@@ -1,8 +1,8 @@
 <template>
-  <el-form ref="formRef" :model="formData" label-width="auto" :label-position="option.labelPosition" :hide-required-asterisk="option.hideRequiredAsterisk">
+  <el-form ref="formRef" :model="formData" label-width="auto" :label-position="option.labelPosition" :hide-required-asterisk="option.hideRequiredAsterisk" :show-message="option.showMessage">
     <el-row :gutter="10">
       <el-col v-for="item in formItems" :span="item.span ?? option.span">
-        <el-form-item :label="item.name" :prop="item.prop" :rules="item.rules || []" v-if="item.type === 'inputs'">
+        <el-form-item :label="item.name" :prop="item.prop" :rules="item.rules || []" v-if="item.type === 'inputs'" :show-message="item.showMessage">
           <el-input v-for="(v, i) in formData[item.prop]" :key="i" v-model="formData[item.prop][i]" :disabled="getDisabled(item)" style="margin-bottom: 5px;">
             <template #append>
               <el-button @click="delInput(item.prop, i)" :disabled="formData[item.prop].length <= 1" type="danger">
@@ -18,7 +18,7 @@
             </el-icon>
           </el-button>
         </el-form-item>
-        <el-form-item :label="item.name" :prop="item.prop" :rules="item.rules || []" v-else>
+        <el-form-item :label="item.name" :prop="item.prop" :rules="item.rules || []" :show-message="item.showMessage" v-else>
           <el-input v-if="item.type === 'input'" v-model="formData[item.prop]" :placeholder="item.placeholder??''" clearable :disabled="getDisabled(item)"/>
           <el-input-tag v-else-if="item.type === 'input-tag'" v-model="formData[item.prop]" :placeholder="item.placeholder??''" clearable :disabled="getDisabled(item)"
                         @keydown="(e:any)=> item.keydownPrevent && e.preventDefault()"
@@ -54,9 +54,10 @@
                           :shortcuts="item.shortcuts??[]" @calendar-change="(val)=>dateCalendarChange(item,val)"
           />
           <el-date-picker v-else-if="item.type === 'datetimerange'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)"
-                          :value-format="item.valueFormat??item.format" :format="item.format"
+                          :value-format="item.valueFormat ?? item.format" :format="item.format"
                           type="datetimerange"
-                          start-placeholder="开始时间" end-placeholder="结束时间"
+                          :start-placeholder="item.startPlaceholder ?? '开始时间'"
+                          :end-placeholder="item.endPlaceholder ?? '结束时间'"
           />
           <el-select v-else-if="item.type === 'select'" v-model="formData[item.prop]" clearable :disabled="getDisabled(item)" @change="(value) => handleChange(value, item)"
                      :multiple="item.multiple ?? false" :collapse-tags="item.collapseTags ?? false" :max-collapse-tags="item.maxCollapseTags ?? 2"
@@ -119,13 +120,14 @@ const option = computed(() => ({
   labelPosition: 'right',
   hideRequiredAsterisk: false,
   span: 12,
+  showMessage: true,
   items: [],
   ...props.option,
 }));
 
 const formData: Record<string, any> = computed(() => props.formData);
 
-const formItems = computed(() => props.option.items.filter(t => (typeof t.show === 'function' ? t.show(t, formData.value) : t.show ?? true)));
+const formItems = computed(() => option.value.items.filter(t => (typeof t.show === 'function' ? t.show(t, formData.value, props.dict) : t.show ?? true)));
 
 function addInput(prop: string) {
   if (!Array.isArray(formData.value[prop])) formData.value[prop] = [];
@@ -199,8 +201,7 @@ const handleTagClose = (e, item, val) => {
   formData.value[item.prop] = formData.value[item.prop].filter(t => t[item.props['value']] !== val[item.props['value']])
 }
 
-props.option.items
-    .filter(t => t.type === 'input-tag')
+option.value.items.filter(t => t.type === 'input-tag')
     .forEach(t => {
       watch(
           () => formData.value[t.prop],

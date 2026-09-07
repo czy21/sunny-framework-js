@@ -10,6 +10,7 @@ export interface DynamicFormOption {
     actionType?: string
     debounceWait?: number
     debounceMaxWait?: number
+    showMessage?: boolean
     span?: string
     items: DynamicFormItem[]
 }
@@ -19,6 +20,8 @@ export interface DynamicFormItem {
     name: string
     type: string
     placeholder?: string
+    startPlaceholder?: string
+    endPlaceholder?: string
     checkStrictly?: boolean
     defaultExpandAll?: boolean
     expandOnClickNode?: boolean

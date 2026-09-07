@@ -13,10 +13,14 @@ export const buildRouter = (
 
         const userStore = obj.useUserStore();
 
-        if (to.path === LOGIN_PATH || userStore.profile.loaded) return next();
+        if (login.mode === 'route' && to.path === LOGIN_PATH) return next();
+        if (userStore.loaded) return next();
 
         try {
+
             await userStore.getProfile();
+
+            userStore.loaded = true
 
             const menus = util.tree.flatten({children: userStore.profile.menus || []}).filter((t:any) => typeof t.component === 'function' || util.object.isNotEmpty(t.component));
 
@@ -26,7 +30,7 @@ export const buildRouter = (
                     const extra = typeof t.extra === 'string' ? JSON.parse(t.extra || '{}') : t.extra;
                     extraMeta = extra?.meta || {};
                 } catch (e) {
-                    console.error(`解析菜单 ${t.code} 的 extra 失败`, e);
+                    console.error(`resolve menu extra ${t.code} error`, e);
                 }
 
                 const component = typeof t.component === 'function' ? t.component : obj.views[`/src/view/${t.component}`];
@@ -40,10 +44,20 @@ export const buildRouter = (
                     });
                 }
             });
-            obj.router.addRoute({path: '/:pathMatch(.*)*', redirect: '/404'});
             return next({...to, replace: true});
         } catch (e) {
-            return next({path: LOGIN_PATH, query: {redirect: to.fullPath}});
+            if (login.mode === 'route') return next({path: LOGIN_PATH, query: {redirect: to.fullPath}});
+            return next()
         }
     });
+
+    obj.router.beforeResolve(async (to) => {
+        if (to.matched.length === 0) {
+            return {
+                path: '/404',
+                replace: true
+            }
+        }
+        return true
+    })
 }
