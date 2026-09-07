@@ -1,6 +1,6 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
-import {ElMessage} from "element-plus";
-import {userRouter} from 'vue-router'
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { ElMessage } from "element-plus";
+import { userRouter } from 'vue-router'
 
 export enum Method {
     GET = "GET",
@@ -18,6 +18,8 @@ export interface HttpClientOption {
     baseURL?: string
     router?: any
     handleResponse?: (response: AxiosResponse<any>) => void
+    handleError?: (error: any) => Boolean
+    handleStatus?: (error: any) => Boolean
 }
 
 export class HttpClient {
@@ -25,32 +27,46 @@ export class HttpClient {
     private service: AxiosInstance
     private readonly router: any
     private readonly handleResponse: (response: AxiosResponse<any>) => void
+    private readonly handleError: (error: any) => Boolean
+    private readonly handleStatus: (error: any) => Boolean
 
     constructor({
-                    baseURL = import.meta.env.VITE_BASE_API,
-                    router = undefined,
-                    handleResponse = () => {
-                    }
-                }: HttpClientOption = {}) {
+        baseURL = import.meta.env.VITE_BASE_API,
+        router = undefined,
+        handleResponse = () => {
+        },
+        handleError = () => {
+            return false
+        },
+        handleStatus = () => {
+            return false
+        }
+    }: HttpClientOption = {}) {
         this.service = axios.create({
             baseURL,
             withCredentials: true,
         });
         this.router = router
         this.handleResponse = handleResponse
+        this.handleError = handleError
+        this.handleStatus = handleStatus
         this.setupInterceptors();
     }
 
     private setupInterceptors() {
         const router = this.router
         this.service.interceptors.request.use(
-            (config: any) => config,
+            (config: any) => {
+                config.headers = config.headers ?? {}
+                config.headers['X-TimeZone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+                return config
+            },
             (error: any) => Promise.reject(error)
         );
 
         this.service.interceptors.response.use(
             (response: AxiosResponse<any>) => {
-                const {code, message} = response.data;
+                const { code, message } = response.data;
                 if (code === -1) {
                     ElMessage({
                         type: "error",
@@ -63,29 +79,31 @@ export class HttpClient {
             },
 
             (error: any) => {
-                const status = error.response?.status;
+                if (this.handleError?.(error)) return Promise.reject(error);
+                if (!this.handleStatus?.(error)) {
+                    const status = error.response?.status;
+                    switch (status) {
+                        case 401:
+                            const redirect = router.currentRoute.value.fullPath;
+                            window.location.href = router.resolve({ path: '/login', query: { redirect } }).href;
+                            break;
+                        case 500:
+                        case 502:
+                            ElMessage({
+                                type: "error",
+                                message: "Server error",
+                                duration: 3000,
+                            });
+                            break;
 
-                switch (status) {
-                    case 401:
-                        const redirect = router.currentRoute.value.fullPath;
-                        window.location.href = router.resolve({path: '/login', query: {redirect}}).href;
-                        break;
-                    case 500:
-                    case 502:
-                        ElMessage({
-                            type: "error",
-                            message: "服务器异常",
-                            duration: 3000,
-                        });
-                        break;
-
-                    case 504:
-                        ElMessage({
-                            type: "error",
-                            message: "网络超时",
-                            duration: 3000,
-                        });
-                        break;
+                        case 504:
+                            ElMessage({
+                                type: "error",
+                                message: "Network timeout",
+                                duration: 3000,
+                            });
+                            break;
+                    }
                 }
                 return Promise.reject(error);
             }
@@ -99,7 +117,7 @@ export class HttpClient {
         params?: any,
         option?: RequestOption
     ): Promise<T> {
-        const {config, errorCallBack} = option || {};
+        const { config, errorCallBack } = option || {};
 
         return new Promise((resolve, reject) => {
             this.service({
@@ -137,7 +155,7 @@ export class HttpClient {
         const versionKey = "version";
         const versionObj = JSON.parse((localStorage.getItem(versionKey) || '{}') as string);
 
-        this.get<any>("version.json", {date: Date.now()}, {config: {baseURL: "/"}})
+        this.get<any>("version.json", { date: Date.now() }, { config: { baseURL: "/" } })
             .then((res) => {
                 if (res.data?.buildDate !== versionObj.buildDate) {
                     localStorage.setItem(versionKey, JSON.stringify(res.data));

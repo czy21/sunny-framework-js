@@ -57,6 +57,7 @@
 <script lang="tsx" setup>
 import {FunctionalComponent, h, ref} from "vue"
 import DynamicElColumn from "./DynamicElColumn.vue"
+import UtcDate from "../utc-date.vue"
 import {ElButton, ElDatePicker, ElInput, ElOption, ElSelect, ElTable} from "element-plus";
 import {util} from "@sunny-framework-js/core"
 import {TableEmits, TableProps} from "./DynamicTableType.ts";
@@ -95,7 +96,6 @@ const props = withDefaults(defineProps<TableProps>(), {
     return false
   },
   cellStyle() {
-    return {}
     return {}
   },
   border(){
@@ -185,6 +185,12 @@ const ShowCell: FunctionalComponent<any> = (scope) => {
   }
   if (scope.column.params.type === 'number') {
     label = util.number.toMilliSeparator(label, true, !util.object.isEmpty(scope.column.params.precision) ? scope.column.params.precision : 2)
+  }
+  if (scope.column.params.timeZone === 'browser') {
+    label = util.basic.formatUtc(scope.row[scope.column.property])
+  }
+  if (scope.column.params.useUtcDate) {
+    label = <UtcDate value={scope.row[scope.column.property]}/>
   }
   return label
 }

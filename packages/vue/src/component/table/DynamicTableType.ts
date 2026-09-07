@@ -61,12 +61,14 @@ export interface TableColumn {
     colTotal?: boolean
     changeByProps?: string[]
     width?: number | string
+    span?: number | 'full'
     fixed?: string
     align?: string
     remote?: boolean
     min?: number
     max?: number
     precision?: number
+    timeZone?: string | "browser"
     custom?: boolean
 }
 

@@ -3,7 +3,8 @@ import {Component, createApp as createAppVue} from 'vue'
 import App from './App.vue'
 
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
+import duration from "dayjs/plugin/duration"
+import utc from "dayjs/plugin/utc"
 
 import {createPinia} from 'pinia'
 import Naive from 'naive-ui'
@@ -23,6 +24,7 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import './static/var.css'
 
 dayjs.extend(duration);
+dayjs.extend(utc);
 
 const createApp = (rootComponent?: Component) => {
     const app = createAppVue(rootComponent || App)
