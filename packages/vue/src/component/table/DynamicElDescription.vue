@@ -30,7 +30,6 @@ import UtcDate from "../utc-date.vue"
 import { ElButton, ElDatePicker, ElInput, ElOption, ElSelect, ElTable } from "element-plus";
 import { util } from "@sunny-framework-js/core"
 import { TableEmits, DictType, TableColumn } from "./DynamicTableType.ts";
-import { createShowCell } from "./ShowCell.ts"
 
 export interface DescriptionProps {
   title?: string
